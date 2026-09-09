@@ -1,0 +1,16 @@
+feature,importance
+salt_100g,6.0
+sugars_100g,5.9
+saturated_fat_100g,5.2
+fiber_100g,2.1
+energy_kcal_100g,2.0
+protein_density,1.8
+fat_100g,1.6
+proteins_100g,1.4
+sat_fat_ratio,1.3
+sugar_density,1.1
+additives_n,0.5
+n_ingredients,0.5
+has_added_sugar,0.1
+has_palm_oil,0.05
+has_additives,0.02
