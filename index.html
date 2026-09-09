@@ -257,7 +257,10 @@
     margin: 0 0 .3rem;
     letter-spacing: -.01em;
   }
+  .card h3 a { text-decoration: none; }
+  .card h3 a:hover { text-decoration: underline; }
   .card p { margin: 0; font-size: var(--step--1); color: var(--ink-soft); max-width: 64ch; }
+  .card p a { color: var(--accent-ink); font-family: "IBM Plex Mono", monospace; font-size: .82rem; }
 
   /* ---- glossary ---- */
   .glossary { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
@@ -279,7 +282,7 @@
   .term dd { margin: 0; font-size: var(--step--1); color: var(--ink-soft); }
   .term dd em { color: var(--accent-ink); font-style: normal; font-weight: 600; }
 
-  /* ---- grade table ---- */
+  /* ---- tables ---- */
   .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
   table { border-collapse: collapse; width: 100%; min-width: 30rem; background: var(--surface); }
   th, td {
@@ -316,6 +319,11 @@
   .g-d { background: var(--grade-d); }
   .g-e { background: var(--grade-e); }
   .note-row td { color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; font-size: .74rem; background: var(--surface-2); }
+
+  /* left-aligned data table (text-heavy) with a right-aligned final number column */
+  .ltable th, .ltable td { text-align: left; }
+  .ltable th:last-child, .ltable td:last-child { text-align: right; }
+  .ltable .prod { font-weight: 600; color: var(--ink); }
 
   /* ---- Q&A ---- */
   .qa { display: grid; gap: .8rem; }
@@ -484,9 +492,33 @@
     <p style="font-size:var(--step--1);color:var(--ink-faint);margin-top:.8rem;">Best at the extremes (A and E — clearly healthy vs clearly junk); weakest on B, where only 55% of real B's were caught. Middle grades are genuinely harder to tell apart.</p>
   </section>
 
+  <!-- Offenders (real output) -->
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>The offenders it caught</h2></div>
+    <p style="color:var(--ink-soft);margin-bottom:1.1rem;">A sample from the analysis: products leaning on health-style language — <em>"protein", "superfood", "light", "delight"</em> — that actually score a poor grade, sorted by sugar per 100&nbsp;g.</p>
+    <div class="table-scroll">
+      <table class="ltable">
+        <thead>
+          <tr><th>Product</th><th>Brand</th><th>Grade</th><th>Sugar /100&nbsp;g</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prod">Turkish Delight</td><td>Cadbury Dairy Milk</td><td><span class="grade-chip g-e">E</span></td><td>55.2 g</td></tr>
+          <tr><td class="prod">Creation Block, Hazelnut Delight</td><td>Lindt</td><td><span class="grade-chip g-e">E</span></td><td>53.0 g</td></tr>
+          <tr><td class="prod">Fry's Turkish Delight</td><td>Cadbury</td><td><span class="grade-chip g-e">E</span></td><td>52.0 g</td></tr>
+          <tr><td class="prod">Old Gold Dark Chocolate</td><td>Cadbury</td><td><span class="grade-chip g-e">E</span></td><td>48.8 g</td></tr>
+          <tr><td class="prod">Salted Caramel Protein Bar</td><td>Tasti</td><td><span class="grade-chip g-e">E</span></td><td>46.9 g</td></tr>
+          <tr><td class="prod">Coconut Delight Bar</td><td>Weight Watchers</td><td><span class="grade-chip g-e">E</span></td><td>37.0 g</td></tr>
+          <tr><td class="prod">Protein Oat Bar</td><td>Hillcrest</td><td><span class="grade-chip g-e">E</span></td><td>27.3 g</td></tr>
+          <tr><td class="prod">Superfood Snacking Mix</td><td>Coles</td><td><span class="grade-chip g-d">D</span></td><td>23.3 g</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:var(--step--1);color:var(--ink-faint);margin-top:.8rem;">The full offender list is in <span style="font-family:'IBM Plex Mono',monospace;">health_halo.csv</span> below.</p>
+  </section>
+
   <!-- Q&A -->
   <section>
-    <div class="sec-head"><span class="sec-num">06</span><h2>FAQs</h2></div>
+    <div class="sec-head"><span class="sec-num">07</span><h2>FAQs</h2></div>
     <div class="qa">
 
       <details open>
@@ -550,7 +582,7 @@
 
   <!-- Stack -->
   <section>
-    <div class="sec-head"><span class="sec-num">07</span><h2>Tools I used</h2></div>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Tools I used</h2></div>
     <div class="chips">
       <span class="chip">DuckDB · SQL extraction</span>
       <span class="chip">pandas · cleaning &amp; features</span>
@@ -558,6 +590,30 @@
       <span class="chip">SHAP · explainability</span>
       <span class="chip">matplotlib · charts</span>
       <span class="chip">Power BI · dashboard</span>
+    </div>
+  </section>
+
+  <!-- Project files & data -->
+  <section>
+    <div class="sec-head"><span class="sec-num">09</span><h2>Project files &amp; data</h2></div>
+    <div class="stack">
+      <div class="card">
+        <h3><a href="health-halo-analysis.ipynb">Jupyter notebook →</a></h3>
+        <p>The complete analysis — DuckDB extraction, cleaning, feature engineering, the model, and the health-halo code. Opens rendered on GitHub.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://world.openfoodfacts.org/data" target="_blank" rel="noopener">Source dataset →</a></h3>
+        <p>Open Food Facts — the open, crowd-sourced global food database. I filtered its bulk export down to Australian products. (The raw file is several GB, so it's linked rather than hosted here.)</p>
+      </div>
+      <div class="card">
+        <h3>Output files</h3>
+        <p>The cleaned data and results behind this page:
+          <a href="outputs/health_halo.csv">health_halo.csv</a> ·
+          <a href="outputs/au_food_model.csv">au_food_model.csv</a> ·
+          <a href="outputs/feature_importance.csv">feature_importance.csv</a> ·
+          <a href="outputs/model_metrics.csv">model_metrics.csv</a>
+        </p>
+      </div>
     </div>
   </section>
 
