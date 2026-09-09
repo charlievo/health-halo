@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Health Halo Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Mulish:ital,wght@0,400;0,500;0,600;0,700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --paper:#f5f6f1;--surface:#fff;--surface-2:#eef1e9;--ink:#1c231c;--ink-soft:#4b544a;--ink-faint:#77806f;
+    --line:#dfe3d8;--line-strong:#cbd1c0;--accent:#2f7d4f;--accent-soft:#e4efe6;--accent-ink:#1f5c39;
+    --grade-a:#1e8e4e;--grade-b:#7bc043;--grade-c:#f4c521;--grade-d:#ef8b2c;--grade-e:#d64545;
+    --shadow:0 1px 2px rgba(28,35,28,.05),0 8px 24px -14px rgba(28,35,28,.22);
+    --s--1:clamp(.8rem,.78rem+.1vw,.88rem);--s0:clamp(.98rem,.95rem+.15vw,1.05rem);
+    --s1:clamp(1.15rem,1.05rem+.4vw,1.35rem);--s2:clamp(1.4rem,1.2rem+.8vw,1.9rem);--s3:clamp(1.9rem,1.5rem+1.8vw,2.8rem);
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --paper:#131612;--surface:#1b1f1a;--surface-2:#21261f;--ink:#edf0e8;--ink-soft:#b6bdae;--ink-faint:#838b7c;
+    --line:#2c322a;--line-strong:#3a4136;--accent:#6bc98c;--accent-soft:#1f2c22;--accent-ink:#a7e0bd;
+    --grade-a:#37b06a;--grade-b:#8fd45a;--grade-c:#f4cf3f;--grade-d:#f59a45;--grade-e:#e56a6a;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -16px rgba(0,0,0,.7);
+  }}
+  :root[data-theme="dark"]{
+    --paper:#131612;--surface:#1b1f1a;--surface-2:#21261f;--ink:#edf0e8;--ink-soft:#b6bdae;--ink-faint:#838b7c;
+    --line:#2c322a;--line-strong:#3a4136;--accent:#6bc98c;--accent-soft:#1f2c22;--accent-ink:#a7e0bd;
+    --grade-a:#37b06a;--grade-b:#8fd45a;--grade-c:#f4cf3f;--grade-d:#f59a45;--grade-e:#e56a6a;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -16px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box}
+  html{color-scheme:light dark}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Mulish",system-ui,sans-serif;font-size:var(--s0);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:64rem;margin:0 auto;padding:clamp(1rem,3vw,2.5rem) clamp(1rem,3.5vw,2.25rem) 4rem}
+  a{color:var(--accent-ink)}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:var(--s--1);letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 .7rem}
+  h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:var(--s3);line-height:1.03;letter-spacing:-.02em;margin:0 0 .6rem;text-wrap:balance}
+  .lede{font-size:var(--s1);color:var(--ink-soft);max-width:52ch;margin:0}
+  .back{display:inline-block;margin-top:1rem;font-family:"IBM Plex Mono",monospace;font-size:var(--s--1);text-decoration:none}
+  .back:hover{text-decoration:underline}
+
+  h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:var(--s2);letter-spacing:-.015em;margin:0 0 .3rem;text-wrap:balance}
+  .sub{color:var(--ink-soft);font-size:var(--s--1);margin:0 0 1.1rem;max-width:64ch}
+  section{margin-top:2.6rem}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:.8rem;margin-top:1.8rem}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+  .kpi .num{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(1.7rem,1.3rem+1.8vw,2.3rem);line-height:1;letter-spacing:-.02em;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+  .kpi .lab{display:block;margin-top:.45rem;font-size:var(--s--1);color:var(--ink-soft);line-height:1.3}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.4rem;box-shadow:var(--shadow)}
+
+  /* distribution comparison */
+  .distrow{margin:1rem 0}
+  .distrow .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.35rem}
+  .distrow .name{font-weight:700;font-size:var(--s--1)}
+  .distrow .de{font-family:"IBM Plex Mono",monospace;font-size:var(--s--1);color:var(--ink-soft)}
+  .distrow .de b{color:var(--grade-e);font-weight:700}
+  .stack{display:flex;height:30px;border-radius:7px;overflow:hidden;background:var(--surface-2)}
+  .seg{height:100%;position:relative}
+  .seg+.seg{box-shadow:-2px 0 0 var(--surface)}
+  .legend{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:1rem;font-size:var(--s--1);color:var(--ink-soft)}
+  .legend span{display:inline-flex;align-items:center;gap:.4rem}
+  .sw{width:.85rem;height:.85rem;border-radius:3px;display:inline-block}
+  .insight{margin-top:1.15rem;padding:.85rem 1rem;background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:8px;font-size:var(--s--1);color:var(--ink)}
+
+  /* claim bars */
+  .cbar{display:grid;grid-template-columns:6.5rem 1fr 4.2rem;align-items:center;gap:.7rem;margin:.5rem 0}
+  .cbar .cl{font-size:var(--s--1);font-weight:600;text-align:right}
+  .cbar .track{position:relative;background:var(--surface-2);border-radius:6px;height:22px;overflow:hidden}
+  .cbar .fill{height:100%;background:var(--accent);border-radius:6px 0 0 6px}
+  .cbar .val{font-family:"IBM Plex Mono",monospace;font-size:var(--s--1);color:var(--ink-soft);font-variant-numeric:tabular-nums}
+  .baseline{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--grade-e);z-index:2}
+  .baseline-note{font-size:var(--s--1);color:var(--grade-e);font-weight:600;margin-top:.6rem;font-family:"IBM Plex Mono",monospace}
+
+  /* filters */
+  .filters{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;align-items:center}
+  .fbtn{font-family:"IBM Plex Mono",monospace;font-size:.78rem;padding:.4rem .75rem;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer}
+  .fbtn:hover{border-color:var(--line-strong)}
+  .fbtn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .search{margin-left:auto;font-family:"Mulish",sans-serif;font-size:var(--s--1);padding:.42rem .7rem;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);min-width:11rem}
+  .livestat{font-size:var(--s--1);color:var(--ink-soft);margin:0 0 .9rem}
+  .livestat b{color:var(--ink)}
+
+  /* table */
+  .tscroll{overflow:auto;max-height:34rem;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;min-width:34rem;background:var(--surface)}
+  th,td{text-align:left;padding:.6rem .8rem;font-size:var(--s--1);border-bottom:1px solid var(--line)}
+  th{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);background:var(--surface-2);cursor:pointer;white-space:nowrap;position:sticky;top:0}
+  th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
+  th .arr{opacity:.5;font-size:.7rem}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--surface-2)}
+  .chip{display:inline-grid;place-items:center;width:1.55rem;height:1.55rem;border-radius:6px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;color:#fff;font-size:.85rem}
+  .cg-a{background:var(--grade-a)}.cg-b{background:var(--grade-b);color:#1c231c}.cg-c{background:var(--grade-c);color:#1c231c}.cg-d{background:var(--grade-d)}.cg-e{background:var(--grade-e)}
+  .claimtag{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--accent-ink);background:var(--accent-soft);padding:.12rem .45rem;border-radius:999px;white-space:nowrap}
+
+  .fnote{font-size:var(--s--1);color:var(--ink-faint);margin-top:.8rem}
+  footer{margin-top:3rem;padding-top:1.2rem;border-top:1.5px solid var(--line);color:var(--ink-faint);font-size:var(--s--1)}
+
+  /* tooltip */
+  #tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-size:.75rem;font-family:"IBM Plex Mono",monospace;padding:.35rem .55rem;border-radius:6px;opacity:0;transition:opacity .1s;z-index:50;white-space:nowrap;transform:translate(-50%,-130%)}
+  @media (max-width:36rem){.cbar{grid-template-columns:5rem 1fr 3.4rem}.search{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<div id="tip"></div>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Health Halo Project · Interactive Dashboard</p>
+    <h1>Does a health claim mean healthier food?</h1>
+    <p class="lede">Exploring 3,956 Australian food products — how the ones that <em>market</em> themselves as healthy actually score.</p>
+    <a class="back" href="index.html">← Back to project overview</a>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <!-- Honest headline: baseline comparison -->
+  <section>
+    <h2>The honest headline</h2>
+    <p class="sub">A health claim isn't a guarantee — but it isn't a red flag either. Compared fairly against the full dataset, health-marketed products actually score <em>better</em> than average. The real story: even so, roughly 1 in 3 still land a poor grade.</p>
+    <div class="panel">
+      <div class="distrow" id="dist-all"></div>
+      <div class="distrow" id="dist-health"></div>
+      <div class="legend" id="legend"></div>
+      <div class="insight" id="insight"></div>
+    </div>
+  </section>
+
+  <!-- Interactive explorer -->
+  <section>
+    <h2>Explore the health-marketed products</h2>
+    <p class="sub">Filter by the claim on the pack, search a brand, or sort by any nutrient. Every row is a product positioned as healthy — the grade and sugar are what it actually contains.</p>
+    <div class="filters" id="filters"></div>
+    <p class="livestat" id="livestat"></p>
+    <div class="tscroll">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th data-k="name">Product <span class="arr"></span></th>
+            <th data-k="brand">Brand <span class="arr"></span></th>
+            <th data-k="claim">Claim <span class="arr"></span></th>
+            <th data-k="grade">Grade <span class="arr"></span></th>
+            <th data-k="sugar" class="num">Sugar <span class="arr"></span></th>
+            <th data-k="salt" class="num">Salt <span class="arr"></span></th>
+            <th data-k="satfat" class="num">Sat fat <span class="arr"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="fnote">Nutrients are per 100&nbsp;g. Grade = official Nutri-Score (A best, E worst).</p>
+  </section>
+
+  <!-- D/E rate by claim -->
+  <section>
+    <h2>Which claims miss most often?</h2>
+    <p class="sub">Share of each claim's products that still score D or E, against the 45% rate across all products. Every claim sits at or below the baseline — health-marketed food is, on average, a bit better than random.</p>
+    <div class="panel" id="claimchart"></div>
+  </section>
+
+  <!-- Feature importance -->
+  <section>
+    <h2>What drives the grade?</h2>
+    <p class="sub">The model's most influential features (from SHAP). Salt, sugar and saturated fat dominate — exactly what Nutri-Score is built to penalise.</p>
+    <div class="panel" id="featchart"></div>
+  </section>
+
+  <footer>
+    Built from the project's own exports · Data: Open Food Facts (open database), Australian products · Nutrient values per 100&nbsp;g.
+  </footer>
+
+</div>
+
+<script>
+const DATA = {"kpis":{"products":3956,"healthMarketed":180,"halo":57,"haloRate":32,"baselineRate":45,"cvAcc":"77%"},"gradeAll":{"a":679,"b":497,"c":990,"d":746,"e":1044},"gradeHealth":{"a":44,"b":36,"c":43,"d":38,"e":19},"claims":[{"claim":"protein","n":85,"de":29,"rate":34},{"claim":"light","n":46,"de":18,"rate":39},{"claim":"low fat","n":21,"de":2,"rate":10},{"claim":"lite","n":9,"de":1,"rate":11},{"claim":"low sugar","n":9,"de":4,"rate":44},{"claim":"diet","n":3,"de":1,"rate":33},{"claim":"superfood","n":3,"de":1,"rate":33},{"claim":"low-fat","n":1,"de":0,"rate":0},{"claim":"nutritious","n":1,"de":1,"rate":100},{"claim":"skinny","n":1,"de":0,"rate":0},{"claim":"wholesome","n":1,"de":0,"rate":0}],"features":[{"feature":"salt_100g","importance":6.0},{"feature":"sugars_100g","importance":5.9},{"feature":"saturated_fat_100g","importance":5.2},{"feature":"fiber_100g","importance":2.1},{"feature":"energy_kcal_100g","importance":2.0},{"feature":"protein_density","importance":1.8},{"feature":"fat_100g","importance":1.6},{"feature":"proteins_100g","importance":1.4},{"feature":"sat_fat_ratio","importance":1.3},{"feature":"sugar_density","importance":1.1},{"feature":"additives_n","importance":0.5},{"feature":"n_ingredients","importance":0.5},{"feature":"has_added_sugar","importance":0.1},{"feature":"has_palm_oil","importance":0.05},{"feature":"has_additives","importance":0.02}],"products":[{"name":"Hi-protein greek style strained yogurt","brand":"","grade":"a","claim":"protein","sugar":3.3,"salt":0.0,"satfat":0.1,"de":0},{"name":"Light Tasty Cheese Shredded","brand":"Westacre Dairy","grade":"d","claim":"light","sugar":1.2,"salt":1.8,"satfat":15.2,"de":1},{"name":"Light Milk","brand":"Farmdale","grade":"b","claim":"light","sugar":4.8,"salt":0.11,"satfat":0.9,"de":0},{"name":"Low Carb Higher Protein Bread","brand":"Bakers Life","grade":"a","claim":"protein","sugar":2.5,"salt":0.0,"satfat":1.8,"de":0},{"name":"Light Cholesterol spread","brand":"Sunny vale","grade":"e","claim":"light","sugar":1.0,"salt":0.93,"satfat":11.0,"de":1},{"name":"Light Tasty Cheese Slices","brand":"Westacre Dairy","grade":"d","claim":"light","sugar":1.2,"salt":1.79,"satfat":15.3,"de":1},{"name":"Mexican Style Superfood Bowl","brand":"World Kitchen","grade":"b","claim":"superfood","sugar":3.3,"salt":0.31,"satfat":0.5,"de":0},{"name":"HIGH PROTEIN BAR LOW CARB","brand":"BSc","grade":"a","claim":"protein","sugar":0.4,"salt":0.01,"satfat":0.6,"de":0},{"name":"Crispetts crispbread light & crunchy","brand":"DAMORA","grade":"a","claim":"light","sugar":0.6,"salt":0.12,"satfat":0.1,"de":0},{"name":"Protein Oat Bar","brand":"Hillcrest","grade":"e","claim":"protein","sugar":27.2,"salt":1.32,"satfat":16.5,"de":1},{"name":"Light Soy Milk","brand":"Inner Goodness","grade":"b","claim":"light","sugar":1.8,"salt":0.15,"satfat":0.1,"de":0},{"name":"LOW FAT CREAMED COTTAGE CHEESE","brand":"coles","grade":"b","claim":"low fat","sugar":5.0,"salt":0.68,"satfat":1.2,"de":0},{"name":"Light Tasty Cheddar","brand":"Coles","grade":"d","claim":"light","sugar":1.0,"salt":1.66,"satfat":16.6,"de":1},{"name":"Light Spreadable Cream Cheese","brand":"coles","grade":"b","claim":"light","sugar":1.0,"salt":0.1,"satfat":2.2,"de":0},{"name":"Light Mozzarella Shredded Cheese","brand":"Coles","grade":"d","claim":"light","sugar":0.0,"salt":1.38,"satfat":10.8,"de":1},{"name":"QUICK SACHETS PROTEIN BERRY FLAVOUR BIG BOWL","brand":"UNCLE TOBYS","grade":"a","claim":"protein","sugar":18.7,"salt":0.08,"satfat":1.1,"de":0},{"name":"Protein Strawberry & Creme","brand":"Uncle Tobys","grade":"c","claim":"protein","sugar":16.0,"salt":0.5,"satfat":3.1,"de":0},{"name":"OLD GOLD DARK CHOCOLATE","brand":"Cadbury","grade":"e","claim":"diet","sugar":48.8,"salt":0.03,"satfat":18.8,"de":1},{"name":"Tuna Bowl - Protein + Iron","brand":"John West","grade":"a","claim":"protein","sugar":1.2,"salt":0.83,"satfat":0.8,"de":0},{"name":"light sour cream","brand":"Coles","grade":"d","claim":"light","sugar":3.6,"salt":0.09,"satfat":12.8,"de":1},{"name":"Lite Milk","brand":"Coles","grade":"b","claim":"lite","sugar":4.5,"salt":0.09,"satfat":0.9,"de":0},{"name":"Ice tea light","brand":"Lipton","grade":"b","claim":"light","sugar":0.1,"salt":0.01,"satfat":0.1,"de":0},{"name":"High Protein Oat","brand":"Sanitarium So Good","grade":"c","claim":"protein","sugar":5.2,"salt":0.11,"satfat":0.4,"de":0},{"name":"CHICKEN SENS OF CHICKEN BREAST lite mayo","brand":"HEINZ","grade":"a","claim":"lite","sugar":1.4,"salt":0.71,"satfat":1.3,"de":0},{"name":"All Natural Yogurt Light","brand":"Farmers Union","grade":"b","claim":"light","sugar":5.6,"salt":0.17,"satfat":2.5,"de":0},{"name":"Protein Vanilla Yoghurt","brand":"Yoplait","grade":"b","claim":"protein","sugar":8.9,"salt":0.19,"satfat":1.9,"de":0},{"name":"Protein mango yogurt","brand":"Yoplait","grade":"c","claim":"protein","sugar":8.7,"salt":0.59,"satfat":5.9,"de":0},{"name":"Diet Coke","brand":"Coca-Cola","grade":"c","claim":"diet","sugar":0.0,"salt":0.0,"satfat":0.0,"de":0},{"name":"FULL CREAM WHOLESOME FRESH MILK","brand":"Dairy Farmers","grade":"c","claim":"wholesome","sugar":4.4,"salt":0.11,"satfat":2.3,"de":0},{"name":"Ultra Pasteurised Low Fat Milk with Plant Sterols","brand":"Dairy Farmers","grade":"b","claim":"low fat","sugar":4.8,"salt":0.11,"satfat":0.8,"de":0},{"name":"HIGH PROTEIN LOW FAT MILK","brand":"COMPLETE DAIRY","grade":"b","claim":"protein","sugar":4.7,"salt":0.06,"satfat":0.9,"de":0},{"name":"Protein smoothie","brand":"Dairy Farmers","grade":"e","claim":"protein","sugar":18.8,"salt":0.55,"satfat":3.6,"de":1},{"name":"PROTEIN smoothie+ Banana Honey","brand":"Dairy Farmers","grade":"e","claim":"protein","sugar":18.4,"salt":0.65,"satfat":3.6,"de":1},{"name":"PROTEIN smoothie+ Mixed Berry","brand":"Dairy Farmers","grade":"c","claim":"protein","sugar":4.6,"salt":0.0,"satfat":1.0,"de":0},{"name":"protein pancake shake","brand":"Green's","grade":"c","claim":"protein","sugar":9.3,"salt":1.04,"satfat":0.1,"de":0},{"name":"Microwave Popcorn Light Butter","brand":"Poppin","grade":"a","claim":"light","sugar":0.8,"salt":0.68,"satfat":1.6,"de":0},{"name":"A2 Protein All Natural Yoghurt","brand":"Jalna","grade":"b","claim":"protein","sugar":3.8,"salt":0.09,"satfat":2.6,"de":0},{"name":"Creamy yohhourt - low fat Vanilla","brand":"Jalna","grade":"c","claim":"low fat","sugar":14.1,"salt":0.78,"satfat":1.4,"de":0},{"name":"Light Greek yoghurt","brand":"Jalna","grade":"b","claim":"light","sugar":6.7,"salt":0.23,"satfat":1.9,"de":0},{"name":"Australian Light Tasty Shredded Cheese","brand":"Woolworths","grade":"d","claim":"light","sugar":0.4,"salt":1.56,"satfat":16.4,"de":1},{"name":"Australian Lite Milk","brand":"Woolworths","grade":"b","claim":"lite","sugar":4.8,"salt":0.1,"satfat":0.8,"de":0},{"name":"Australian Lite Fresh Milk","brand":"Woolworths","grade":"b","claim":"lite","sugar":4.9,"salt":0.11,"satfat":0.9,"de":0},{"name":"Smooth Light Ricotta","brand":"Woolworths","grade":"c","claim":"light","sugar":3.8,"salt":0.51,"satfat":2.7,"de":0},{"name":"Strawberry yoghurt 98% fat free","brand":"Woolworths","grade":"c","claim":"low fat","sugar":12.4,"salt":0.11,"satfat":1.2,"de":0},{"name":"lite milk","brand":"Woolworths","grade":"b","claim":"lite","sugar":4.9,"salt":0.11,"satfat":0.9,"de":0},{"name":"LOW FAT DAIRY MILK LACTOSE FREE","brand":"Pauls Zymil","grade":"b","claim":"low fat","sugar":5.1,"salt":0.12,"satfat":0.8,"de":0},{"name":"LOW FAT chocolate mousse","brand":"Pauls","grade":"b","claim":"low fat","sugar":9.5,"salt":0.1,"satfat":1.0,"de":0},{"name":"PLUS+ Protein Strawberry Yoghurt","brand":"Pauls","grade":"c","claim":"protein","sugar":3.4,"salt":0.11,"satfat":0.1,"de":0},{"name":"PLUS+ Protein Chocolate Creamy Snack","brand":"Vauls","grade":"a","claim":"protein","sugar":6.2,"salt":0.17,"satfat":0.3,"de":0},{"name":"PLUS+ Protein Vanilla Yoghurt","brand":"Pauls","grade":"a","claim":"protein","sugar":3.4,"salt":0.1,"satfat":0.1,"de":0},{"name":"Vanilla Creamy Yogurt","brand":"vadilia","grade":"a","claim":"low fat","sugar":4.5,"salt":0.13,"satfat":1.3,"de":0},{"name":"Light Greek Style All Natural Yoghurt","brand":"Tasmanian Tamar Valley Dairy, Light & Fr","grade":"b","claim":"light","sugar":6.1,"salt":0.17,"satfat":2.8,"de":0},{"name":"NUTRI-GRAIN HIGH PROTEIN CRUNCH","brand":"Kellogg's","grade":"d","claim":"protein","sugar":20.9,"salt":0.88,"satfat":0.9,"de":1},{"name":"Protein Pancake Mix Original","brand":"The Healthy Baker","grade":"d","claim":"protein","sugar":12.0,"salt":1.61,"satfat":1.0,"de":1},{"name":"Cruskits Light","brand":"Arnotts","grade":"e","claim":"light","sugar":4.4,"salt":8.46,"satfat":0.9,"de":1},{"name":"Cruskits Low Fat","brand":"Arnott's","grade":"c","claim":"low fat","sugar":4.4,"salt":0.96,"satfat":0.9,"de":0},{"name":"Low Fat Ice Cream","brand":"Peters","grade":"c","claim":"low fat","sugar":21.5,"salt":0.24,"satfat":2.3,"de":0},{"name":"Vanilla Flavoured Low Fat Ice Cream with Raspberry Sauce (5%)","brand":"Peters","grade":"c","claim":"low fat","sugar":10.0,"salt":0.09,"satfat":0.8,"de":0},{"name":"Vanilla Flavoured Low Fat Ice Cream","brand":"Peters","grade":"c","claim":"low fat","sugar":19.8,"salt":0.24,"satfat":1.7,"de":0},{"name":"LIGHT RYE BREAD","brand":"HELGA'S","grade":"b","claim":"light","sugar":2.7,"salt":0.95,"satfat":0.9,"de":0},{"name":"Beef & Parmesan Ravioli +Protein","brand":"Latina Fresh","grade":"c","claim":"protein","sugar":1.6,"salt":1.68,"satfat":2.8,"de":0},{"name":"three olive dip & spread","brand":"Chris' Homestyle","grade":"d","claim":"low sugar","sugar":0.5,"salt":2.38,"satfat":4.0,"de":1},{"name":"Protein Powder","brand":"Nature's Way","grade":"d","claim":"protein","sugar":0.9,"salt":2.25,"satfat":0.9,"de":1},{"name":"Light Smooth Ricotta","brand":"Coles","grade":"b","claim":"light","sugar":1.3,"salt":0.33,"satfat":3.0,"de":0},{"name":"Light Greek style natural yoghurt","brand":"coles","grade":"a","claim":"light","sugar":5.1,"salt":0.14,"satfat":1.4,"de":0},{"name":"Light Philadelphia","brand":"Philadelphia","grade":"d","claim":"light","sugar":0.0,"salt":0.95,"satfat":15.2,"de":1},{"name":"Light Philadelphia","brand":"PHILADELPHIA","grade":"c","claim":"light","sugar":0.0,"salt":0.65,"satfat":9.6,"de":0},{"name":"Original Philadelphia","brand":"Philadelphia","grade":"d","claim":"low fat","sugar":2.9,"salt":0.88,"satfat":15.2,"de":1},{"name":"Soyamilk, Lite","brand":"Sanitarium, So Good","grade":"b","claim":"lite","sugar":2.0,"salt":0.11,"satfat":0.2,"de":0},{"name":"UP&GO PROTEIN ENERGIZE","brand":"Sanitarium","grade":"e","claim":"protein","sugar":16.6,"salt":0.0,"satfat":0.7,"de":1},{"name":"High Protein Cottage Cheese Original","brand":"Bulla","grade":"b","claim":"protein","sugar":4.2,"salt":0.73,"satfat":1.3,"de":0},{"name":"Cooking Light Thickened Cream","brand":"Bulla","grade":"c","claim":"light","sugar":0.8,"salt":0.02,"satfat":2.4,"de":0},{"name":"Light Sour Cream","brand":"Bulla","grade":"d","claim":"light","sugar":3.0,"salt":0.08,"satfat":12.5,"de":1},{"name":"Superfood Snacking Mix","brand":"Coles","grade":"d","claim":"superfood","sugar":23.3,"salt":0.09,"satfat":8.4,"de":1},{"name":"High protein yoghurt","brand":"Coles","grade":"a","claim":"protein","sugar":3.9,"salt":0.19,"satfat":0.1,"de":0},{"name":"Simply Light Sandwich Slices","brand":"Coles","grade":"e","claim":"light","sugar":3.4,"salt":3.07,"satfat":11.1,"de":1},{"name":"High Protein Fetta","brand":"Riverina Dairy Co.","grade":"d","claim":"protein","sugar":0.1,"salt":3.0,"satfat":8.3,"de":1},{"name":"Tasmanian Tamar Valley Dairy","brand":"Tasmanian Tamar Valley Dairy","grade":"b","claim":"low fat","sugar":7.4,"salt":0.18,"satfat":1.3,"de":0},{"name":"Whey Protein Crisps","brand":"Fresh Life","grade":"d","claim":"protein","sugar":7.5,"salt":0.45,"satfat":3.9,"de":1},{"name":"Light Milk","brand":"a2 Milk Company","grade":"b","claim":"light","sugar":5.2,"salt":0.12,"satfat":0.9,"de":0},{"name":"slow dry-roasted nutritious snack","brand":"munchme","grade":"d","claim":"nutritious","sugar":17.4,"salt":0.42,"satfat":4.3,"de":1},{"name":"Protein Smoothie Banana Honey + Cinnamon","brand":"Rokeby","grade":"c","claim":"protein","sugar":3.9,"salt":0.07,"satfat":1.1,"de":0},{"name":"Protein Smoothie Double Espresso","brand":"ROKEBY","grade":"c","claim":"protein","sugar":5.9,"salt":0.06,"satfat":1.1,"de":0},{"name":"Protein Smoothie Vanilla Wafer flavour","brand":"Rokeby","grade":"c","claim":"protein","sugar":3.9,"salt":0.07,"satfat":1.1,"de":0},{"name":"Protein Smoothie Strawberry","brand":"Rokeby","grade":"d","claim":"protein","sugar":5.9,"salt":0.05,"satfat":1.1,"de":1},{"name":"Low Carb High Protein Choc Fudge Brownie Bars","brand":"Mayver's","grade":"d","claim":"protein","sugar":3.1,"salt":0.21,"satfat":8.8,"de":1},{"name":"Spud Lite","brand":"Zerella","grade":"a","claim":"lite","sugar":1.1,"salt":0.03,"satfat":0.1,"de":0},{"name":"ICED CHOCOLATE FLAVOURED MILK","brand":"Nippy's","grade":"e","claim":"low fat","sugar":32.6,"salt":0.42,"satfat":5.6,"de":1},{"name":"Cheer Cheese Slices Light n Tasty","brand":"CHEER","grade":"c","claim":"light","sugar":0.9,"salt":0.7,"satfat":15.3,"de":0},{"name":"Cranberry classic Light","brand":"ocean spray","grade":"c","claim":"light","sugar":0.9,"salt":0.02,"satfat":0.0,"de":0},{"name":"Cottage Cheese Organic High Protein","brand":"East Coast by Barambah Organics Dairy","grade":"a","claim":"protein","sugar":4.0,"salt":0.09,"satfat":0.3,"de":0},{"name":"Low fat natural yoghurt","brand":"Barambah Organics","grade":"b","claim":"low fat","sugar":7.3,"salt":0.14,"satfat":0.2,"de":0},{"name":"Wraps LITE","brand":"Mission","grade":"d","claim":"lite","sugar":1.0,"salt":1.67,"satfat":1.0,"de":1},{"name":"Low Gi + Protein Wraps","brand":"Mission","grade":"a","claim":"protein","sugar":1.5,"salt":0.38,"satfat":1.0,"de":0},{"name":"Yakult Light","brand":"Yakult","grade":"c","claim":"light","sugar":4.3,"salt":0.04,"satfat":0.1,"de":0},{"name":"Protein Greek Style Yoghurt & Berry","brand":"Carman's","grade":"d","claim":"protein","sugar":22.8,"salt":0.55,"satfat":5.5,"de":1},{"name":"Light Rye","brand":"Abbott's Bakery","grade":"b","claim":"light","sugar":1.8,"salt":0.72,"satfat":0.5,"de":0},{"name":"High-Protein","brand":"Wicked Sister","grade":"b","claim":"protein","sugar":5.2,"salt":0.23,"satfat":2.3,"de":0},{"name":"Australian Hemp Seed Protein Powder","brand":"macro","grade":"a","claim":"protein","sugar":5.0,"salt":0.0,"satfat":1.5,"de":0},{"name":"HIGH PROTEIN GREEK YOGHURT","brand":"coles PERFORM","grade":"a","claim":"protein","sugar":3.6,"salt":0.0,"satfat":0.0,"de":0},{"name":"Low Sugar Baked Chocolate Oat Bar","brand":"Coles Joyful","grade":"d","claim":"low sugar","sugar":1.7,"salt":0.15,"satfat":12.7,"de":1},{"name":"Chobani Greek Yogurt - Mandarin Low Fat","brand":"Chobani","grade":"b","claim":"low fat","sugar":11.1,"salt":0.13,"satfat":1.0,"de":0},{"name":"Greek Yogurt Natural Light","brand":"Chobani","grade":"a","claim":"light","sugar":3.3,"salt":0.08,"satfat":0.1,"de":0},{"name":"protein strawberry yogurt","brand":"Chobani","grade":"a","claim":"protein","sugar":5.1,"salt":0.14,"satfat":0.2,"de":0},{"name":"Chobani stay fit protein","brand":"Chobani","grade":"a","claim":"protein","sugar":3.1,"salt":0.09,"satfat":0.1,"de":0},{"name":"Chobani fit 15g Protein","brand":"Chobani","grade":"c","claim":"protein","sugar":3.1,"salt":0.07,"satfat":0.1,"de":0},{"name":"CRANKT CHOC PROTEIN 375ML","brand":"DNA","grade":"b","claim":"protein","sugar":2.8,"salt":0.21,"satfat":0.9,"de":0},{"name":"No Sugar Added Vanilla Low Fat Ice Cream","brand":"Peters","grade":"a","claim":"low fat","sugar":8.8,"salt":0.15,"satfat":2.2,"de":0},{"name":"CHOC MINT CRUNCH HIGH PROTEIN BAR","brand":"BC","grade":"d","claim":"protein","sugar":4.8,"salt":0.49,"satfat":6.5,"de":1},{"name":"Protein Granola Clusters Choc Almond","brand":"Red Tractor","grade":"a","claim":"protein","sugar":2.6,"salt":0.01,"satfat":2.6,"de":0},{"name":"PROTEIN PINT","brand":"twisted","grade":"a","claim":"protein","sugar":3.3,"salt":0.09,"satfat":1.7,"de":0},{"name":"Chocolate Brownie Whole Food Protein Bar","brand":"Sam's Pantry","grade":"d","claim":"protein","sugar":20.3,"salt":0.0,"satfat":8.0,"de":1},{"name":"Soy Milk Protein Plus","brand":"Vitasoy","grade":"b","claim":"protein","sugar":0.7,"salt":0.0,"satfat":0.5,"de":0},{"name":"Soy Milky Low Sugar","brand":"Vitasoy","grade":"b","claim":"low sugar","sugar":1.6,"salt":0.2,"satfat":0.3,"de":0},{"name":"Grass Fed Whey Protein Isolate","brand":"Bulk Nutrients","grade":"d","claim":"protein","sugar":8.3,"salt":0.69,"satfat":4.3,"de":1},{"name":"Five:am superfood yoghurt","brand":"","grade":"c","claim":"superfood","sugar":11.2,"salt":0.16,"satfat":3.4,"de":0},{"name":"Stone Baked Low Carb High Protein Pizza Base","brand":"Della Rosa","grade":"a","claim":"protein","sugar":0.6,"salt":0.85,"satfat":0.3,"de":0},{"name":"YoPRO 15g PROTEIN + VITAMIN B12","brand":"Danone","grade":"a","claim":"protein","sugar":3.5,"salt":0.1,"satfat":0.2,"de":0},{"name":"YoPRO Salted Caramel Flavoured Protein","brand":"Danone","grade":"a","claim":"protein","sugar":3.4,"salt":0.22,"satfat":0.3,"de":0},{"name":"Protein Salami","brand":"Primo","grade":"e","claim":"protein","sugar":1.8,"salt":2.5,"satfat":11.1,"de":1},{"name":"Protein Coconut, Yoghurt & Roasted Nut","brand":"Carman's","grade":"e","claim":"protein","sugar":18.8,"salt":0.6,"satfat":9.8,"de":1},{"name":"Protein Salted Caramel Nut Butter","brand":"Carman's","grade":"d","claim":"protein","sugar":15.2,"salt":0.96,"satfat":6.0,"de":1},{"name":"Low Sugar Granola Raspberry & Coconut","brand":"Carman's","grade":"a","claim":"low sugar","sugar":4.9,"salt":0.01,"satfat":4.7,"de":0},{"name":"Protein Porridge Sachets Almond, Vanilla & Cinnamon","brand":"Carman's","grade":"a","claim":"protein","sugar":0.0,"salt":0.02,"satfat":1.1,"de":0},{"name":"Protein Double Dark Choc","brand":"Carman's","grade":"e","claim":"protein","sugar":18.5,"salt":0.69,"satfat":13.5,"de":1},{"name":"Protein Rich Granola Almond & Hazelnut","brand":"Carman's","grade":"a","claim":"protein","sugar":5.1,"salt":0.05,"satfat":1.6,"de":0},{"name":"Nut Bars Low Sugar & Low Carb Dark Choc, Roasted Almond & Cashew","brand":"Carman's","grade":"d","claim":"low sugar","sugar":4.7,"salt":0.15,"satfat":13.5,"de":1},{"name":"Low Sugar Granola Raspberry & Coconut","brand":"Carman's","grade":"a","claim":"low sugar","sugar":4.9,"salt":0.07,"satfat":4.4,"de":0},{"name":"High Protein Crisp Dark Choc Caramel","brand":"Carman's","grade":"c","claim":"protein","sugar":0.0,"salt":0.0,"satfat":0.0,"de":0},{"name":"PROTEIN CLUSTERS Cranberry & Coconut","brand":"Carman's","grade":"c","claim":"protein","sugar":23.3,"salt":0.35,"satfat":2.4,"de":0},{"name":"HIGH PROTEIN LOW CARB WHITE WRAPS","brand":"SIMSON'S PANTRY","grade":"c","claim":"protein","sugar":4.4,"salt":1.13,"satfat":4.9,"de":0},{"name":"HIGH PROTEIN LOW CARB + FIBRE WRAPS","brand":"SIMSON'S PANTRY","grade":"c","claim":"protein","sugar":4.6,"salt":0.97,"satfat":4.7,"de":0},{"name":"High Protein Low Carb Garlic & Herb","brand":"Simson's Pantry","grade":"c","claim":"protein","sugar":1.7,"salt":0.97,"satfat":4.6,"de":0},{"name":"HIGH PROTEIN LOW CARB WHOLEMEAL","brand":"SIMSON'S PANTRY","grade":"a","claim":"protein","sugar":2.4,"salt":0.82,"satfat":3.3,"de":0},{"name":"High protein plain yogurt","brand":"Woolworths","grade":"a","claim":"protein","sugar":4.0,"salt":0.09,"satfat":1.0,"de":0},{"name":"Spreadable Light Cream Cheese","brand":"Woolworths","grade":"c","claim":"light","sugar":2.4,"salt":0.6,"satfat":9.2,"de":0},{"name":"PROTEIN PIZZA","brand":"FroPro","grade":"c","claim":"protein","sugar":1.1,"salt":1.5,"satfat":2.8,"de":0},{"name":"Kimchi","brand":"BRYNE CO","grade":"c","claim":"low sugar","sugar":1.6,"salt":1.35,"satfat":0.0,"de":0},{"name":"ProActiv Light","brand":"Flora","grade":"c","claim":"light","sugar":0.1,"salt":0.36,"satfat":9.0,"de":0},{"name":"ProActiv Light","brand":"Flora","grade":"c","claim":"light","sugar":1.3,"salt":0.9,"satfat":9.8,"de":0},{"name":"true protein bar","brand":"true","grade":"d","claim":"protein","sugar":14.8,"salt":0.0,"satfat":9.9,"de":1},{"name":"Cookies & Cream Vanilla Low-fat Greek Yogurt with Choc Cookie, Dark ch","brand":"Chobani flip","grade":"c","claim":"low-fat","sugar":11.9,"salt":0.14,"satfat":2.9,"de":0},{"name":"Complete Protein Bread","brand":"Herman Brot","grade":"a","claim":"protein","sugar":1.6,"salt":0.97,"satfat":1.3,"de":0},{"name":"Moo Protein 15G Greek Yoghurt Style & Granola","brand":"","grade":"b","claim":"protein","sugar":6.5,"salt":0.11,"satfat":2.2,"de":0},{"name":"PROTEIN WHOLE SEED BARS","brand":"Nice & Natural","grade":"c","claim":"protein","sugar":10.7,"salt":0.42,"satfat":3.7,"de":0},{"name":"DELUXE PROTEIN BARS salted caramel, cashew & choc","brand":"Nice & Natural","grade":"e","claim":"protein","sugar":23.2,"salt":0.82,"satfat":12.5,"de":1},{"name":"Lite and fruity","brand":"Waterfords","grade":"b","claim":"lite","sugar":0.1,"salt":0.01,"satfat":0.0,"de":0},{"name":"Protein Cheesecake Caramel Biscuit","brand":"Musclenation","grade":"d","claim":"protein","sugar":10.2,"salt":0.5,"satfat":6.4,"de":1},{"name":"Light thickened cream","brand":"Coles","grade":"d","claim":"light","sugar":1.0,"salt":0.07,"satfat":12.9,"de":1},{"name":"Plant Protein Mince","brand":"V2","grade":"a","claim":"protein","sugar":1.1,"salt":0.74,"satfat":3.7,"de":0},{"name":"Sweet Chilli Plant Protein Tenders","brand":"V2 Food","grade":"a","claim":"protein","sugar":4.0,"salt":0.53,"satfat":0.8,"de":0},{"name":"Chipotle Chicken Burrito Bowl","brand":"My Muscle Chef","grade":"a","claim":"low sugar","sugar":1.7,"salt":0.89,"satfat":0.7,"de":0},{"name":"Protein Cookie Choc Chip","brand":"My Muscle Chef","grade":"e","claim":"protein","sugar":21.4,"salt":0.99,"satfat":10.5,"de":1},{"name":"Protein Oat Slice Apple & Cinnamon","brand":"My Muscle Chef","grade":"d","claim":"protein","sugar":15.4,"salt":0.88,"satfat":9.6,"de":1},{"name":"Protein Oat Slice","brand":"Chief","grade":"e","claim":"protein","sugar":14.7,"salt":0.0,"satfat":12.9,"de":1},{"name":"Carb Killa Protein Spread Hazel Nutter Flavour","brand":"Grenade Carb Killa","grade":"d","claim":"protein","sugar":5.6,"salt":0.24,"satfat":8.7,"de":1},{"name":"Gold Non-Dairy Coconut Latte Instant Coffee x 6 Sachets","brand":"Nestl\u00e9","grade":"c","claim":"low fat","sugar":2.4,"salt":0.07,"satfat":0.9,"de":0},{"name":"Nescaf\u00e9 Gold Oat Latte","brand":"Nestl\u00e9","grade":"c","claim":"low fat","sugar":2.4,"salt":0.08,"satfat":1.0,"de":0},{"name":"Light Coconut Milk","brand":"AYAM","grade":"e","claim":"light","sugar":1.7,"salt":0.12,"satfat":14.9,"de":1},{"name":"Light Coconut Cream","brand":"AYAM","grade":"d","claim":"light","sugar":1.5,"salt":0.03,"satfat":13.0,"de":1},{"name":"YoPro Perform 20g protein","brand":"Danone","grade":"a","claim":"protein","sugar":3.5,"salt":0.12,"satfat":0.5,"de":0},{"name":"Simply natural sweetened low fat yoghurt","brand":"fresh 'n fruity","grade":"b","claim":"low fat","sugar":7.8,"salt":0.1,"satfat":0.9,"de":0},{"name":"Mini Peanut Butter Choc Chip Keto Protein Cookie","brand":"Justine's","grade":"d","claim":"protein","sugar":2.7,"salt":0.83,"satfat":8.8,"de":1},{"name":"Mini cheese protein","brand":"Babybel","grade":"d","claim":"protein","sugar":0.0,"salt":1.77,"satfat":10.5,"de":1},{"name":"Sodastream Sodamix Classic Diet Cola Flavour.","brand":"Sodastream","grade":"c","claim":"diet","sugar":0.0,"salt":0.0,"satfat":0.0,"de":0},{"name":"Refreshingly Light Indian Tonic Water","brand":"Fever-Tree","grade":"c","claim":"light","sugar":3.8,"salt":0.02,"satfat":0.0,"de":0},{"name":"Crispy skinny fries","brand":"Strong Roots","grade":"b","claim":"skinny","sugar":0.5,"salt":0.32,"satfat":0.3,"de":0},{"name":"LIGHT MAYONNAISE","brand":"HELLMANN'S","grade":"d","claim":"light","sugar":2.1,"salt":1.7,"satfat":2.9,"de":1},{"name":"Salted Caramel Protein Bar","brand":"Tasti","grade":"e","claim":"protein","sugar":46.9,"salt":2.75,"satfat":15.0,"de":1},{"name":"Light Ice Cream Birthday Cake","brand":"Halo Top","grade":"a","claim":"light","sugar":10.6,"salt":0.28,"satfat":1.8,"de":0},{"name":"Cookies & Cream Light Ice Cream","brand":"Halo Top","grade":"a","claim":"light","sugar":9.7,"salt":0.3,"satfat":1.4,"de":0},{"name":"Light Ice Cream","brand":"Halo Top","grade":"a","claim":"light","sugar":10.3,"salt":0.34,"satfat":1.7,"de":0},{"name":"High protein milk product blueberry","brand":"Milbona","grade":"a","claim":"protein","sugar":4.0,"salt":0.21,"satfat":0.2,"de":0},{"name":"Caramel Nut Chew","brand":"Atkins","grade":"d","claim":"low sugar","sugar":2.9,"salt":0.54,"satfat":11.8,"de":1},{"name":"Birthday Cake Flavour Protein Bar","brand":"Quest","grade":"c","claim":"protein","sugar":1.2,"salt":1.02,"satfat":6.7,"de":0},{"name":"Sunny vale light olive","brand":"Aldi","grade":"d","claim":"light","sugar":1.0,"salt":0.91,"satfat":14.6,"de":1},{"name":"Light coconut milk","brand":"TCC","grade":"e","claim":"light","sugar":0.8,"salt":0.05,"satfat":5.6,"de":1},{"name":"Protein Pretzels","brand":"Crisp Power","grade":"a","claim":"protein","sugar":1.0,"salt":1.29,"satfat":3.0,"de":0},{"name":"Yogurt low fat","brand":"Easiyo","grade":"a","claim":"low fat","sugar":8.0,"salt":0.0,"satfat":0.9,"de":0},{"name":"Light & Creamy Evaporated Milk","brand":"Nestle Carnation","grade":"e","claim":"light","sugar":13.5,"salt":0.33,"satfat":0.9,"de":1}]};
+const tip = document.getElementById('tip');
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity='1';tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';}
+function moveTip(e){tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';}
+function hideTip(){tip.style.opacity='0';}
+const GRADES=['a','b','c','d','e'];
+const gradeColor=g=>getComputedStyle(document.documentElement).getPropertyValue('--grade-'+g);
+
+/* ---------- KPIs ---------- */
+(function(){
+  const k=DATA.kpis;
+  const tiles=[
+    [k.products.toLocaleString(),'Products analysed'],
+    [k.healthMarketed,'Use health-style marketing'],
+    [k.haloRate+'%','Of those score D or E'],
+    [k.baselineRate+'%','Baseline: all products D/E'],
+    [k.cvAcc,'Model accuracy (cross-val)']
+  ];
+  document.getElementById('kpis').innerHTML=tiles.map(t=>
+    `<div class="kpi"><span class="num">${t[0]}</span><span class="lab">${t[1]}</span></div>`).join('');
+})();
+
+/* ---------- distribution comparison ---------- */
+function distRow(el,label,counts){
+  const total=GRADES.reduce((s,g)=>s+(counts[g]||0),0);
+  const de=((counts.d||0)+(counts.e||0));
+  const dePct=Math.round(de/total*100);
+  const segs=GRADES.map(g=>{
+    const n=counts[g]||0,pct=n/total*100;
+    return `<div class="seg" style="width:${pct}%;background:var(--grade-${g})"
+      data-tip="Grade ${g.toUpperCase()}: ${n} products (${Math.round(pct)}%)"></div>`;
+  }).join('');
+  el.innerHTML=`<div class="top"><span class="name">${label} <span style="color:var(--ink-faint);font-weight:400">(${total.toLocaleString()})</span></span>
+    <span class="de">D+E: <b>${dePct}%</b></span></div><div class="stack">${segs}</div>`;
+  el.querySelectorAll('.seg').forEach(s=>{
+    s.addEventListener('mousemove',e=>showTip(e,s.dataset.tip));
+    s.addEventListener('mouseleave',hideTip);
+  });
+}
+distRow(document.getElementById('dist-all'),'All products',DATA.gradeAll);
+distRow(document.getElementById('dist-health'),'Health-marketed',DATA.gradeHealth);
+document.getElementById('legend').innerHTML=GRADES.map(g=>
+  `<span><i class="sw" style="background:var(--grade-${g})"></i>Grade ${g.toUpperCase()}</span>`).join('');
+document.getElementById('insight').innerHTML=
+  `<strong>Read it honestly:</strong> ${DATA.kpis.baselineRate}% of <em>all</em> products score D/E, but only ${DATA.kpis.haloRate}% of health-marketed ones do — so the claims aren't deceptive on average. The catch is that ${DATA.kpis.haloRate}% is still far from the "all healthy" a shopper assumes: a claim is no guarantee.`;
+
+/* ---------- claim chart ---------- */
+(function(){
+  const base=DATA.kpis.baselineRate;
+  const rows=DATA.claims.filter(c=>c.n>=3).sort((a,b)=>b.rate-a.rate);
+  const maxScale=Math.max(base,...rows.map(r=>r.rate))+5;
+  const html=rows.map(c=>{
+    const w=c.rate/maxScale*100;
+    return `<div class="cbar">
+      <span class="cl">${c.claim}</span>
+      <div class="track" data-tip="${c.claim}: ${c.de} of ${c.n} score D/E">
+        <div class="baseline" style="left:${base/maxScale*100}%"></div>
+        <div class="fill" style="width:${w}%"></div>
+      </div>
+      <span class="val">${c.rate}%</span>
+    </div>`;
+  }).join('');
+  const el=document.getElementById('claimchart');
+  el.innerHTML=html+`<div class="baseline-note">▎ red line = ${base}% baseline (all products)</div>`;
+  el.querySelectorAll('.track').forEach(t=>{
+    t.addEventListener('mousemove',e=>showTip(e,t.dataset.tip));
+    t.addEventListener('mouseleave',hideTip);
+  });
+})();
+
+/* ---------- feature importance ---------- */
+(function(){
+  const feats=DATA.features.slice().sort((a,b)=>b.importance-a.importance);
+  const max=Math.max(...feats.map(f=>f.importance));
+  const nice=s=>s.replace(/_100g/,'').replace(/_/g,' ');
+  document.getElementById('featchart').innerHTML=feats.map(f=>{
+    const w=f.importance/max*100;
+    return `<div class="cbar" style="grid-template-columns:9rem 1fr 3rem">
+      <span class="cl">${nice(f.feature)}</span>
+      <div class="track"><div class="fill" style="width:${w}%"></div></div>
+      <span class="val">${f.importance}</span></div>`;
+  }).join('');
+})();
+
+/* ---------- interactive table ---------- */
+let activeClaim='all', sortKey='sugar', sortDir=-1, searchQ='';
+const gradeRank={a:1,b:2,c:3,d:4,e:5};
+
+(function buildFilters(){
+  const claims=DATA.claims.filter(c=>c.n>=3).sort((a,b)=>b.n-a.n).map(c=>c.claim);
+  const btns=['all',...claims];
+  document.getElementById('filters').innerHTML=btns.map(c=>
+    `<button class="fbtn${c==='all'?' active':''}" data-c="${c}">${c==='all'?'All claims':c}</button>`).join('')
+    +`<input class="search" id="search" type="search" placeholder="Search product or brand…">`;
+  document.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>{
+    activeClaim=b.dataset.c;
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.toggle('active',x===b));
+    render();
+  }));
+  document.getElementById('search').addEventListener('input',e=>{searchQ=e.target.value.toLowerCase();render();});
+})();
+
+document.querySelectorAll('#tbl th').forEach(th=>th.addEventListener('click',()=>{
+  const k=th.dataset.k;
+  if(k===sortKey){sortDir*=-1;}else{sortKey=k;sortDir=(k==='name'||k==='brand'||k==='claim')?1:-1;}
+  render();
+}));
+
+function currentRows(){
+  let rows=DATA.products.filter(p=>activeClaim==='all'||p.claim===activeClaim);
+  if(searchQ)rows=rows.filter(p=>(p.name+' '+p.brand).toLowerCase().includes(searchQ));
+  rows.sort((a,b)=>{
+    let av,bv;
+    if(sortKey==='grade'){av=gradeRank[a.grade];bv=gradeRank[b.grade];}
+    else{av=a[sortKey];bv=b[sortKey];}
+    if(av==null)av=-Infinity; if(bv==null)bv=-Infinity;
+    if(typeof av==='string'){return av.localeCompare(bv)*sortDir;}
+    return (av-bv)*sortDir;
+  });
+  return rows;
+}
+
+function render(){
+  const rows=currentRows();
+  const de=rows.filter(p=>p.de).length;
+  const pct=rows.length?Math.round(de/rows.length*100):0;
+  document.getElementById('livestat').innerHTML=
+    `Showing <b>${rows.length}</b> product${rows.length===1?'':'s'}${activeClaim==='all'?'':' claiming "<b>'+activeClaim+'</b>"'} · <b>${de}</b> score D or E (<b>${pct}%</b>)`;
+  document.getElementById('tbody').innerHTML=rows.map(p=>`
+    <tr>
+      <td>${esc(p.name)}</td>
+      <td>${esc(p.brand)}</td>
+      <td>${p.claim?`<span class="claimtag">${esc(p.claim)}</span>`:''}</td>
+      <td><span class="chip cg-${p.grade}">${p.grade.toUpperCase()}</span></td>
+      <td class="num">${p.sugar==null?'–':p.sugar+' g'}</td>
+      <td class="num">${p.salt==null?'–':p.salt+' g'}</td>
+      <td class="num">${p.satfat==null?'–':p.satfat+' g'}</td>
+    </tr>`).join('');
+  document.querySelectorAll('#tbl th .arr').forEach(a=>a.textContent='');
+  const th=document.querySelector(`#tbl th[data-k="${sortKey}"] .arr`);
+  if(th)th.textContent=sortDir>0?'▲':'▼';
+}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+render();
+</script>
+</body>
+</html>
