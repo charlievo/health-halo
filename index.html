@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Health Halo Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Mulish:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+  :root {
+    /* light theme — warm paper with a faint green bias, grounded in the food/leaf subject */
+    --paper:        #f5f6f1;
+    --surface:      #ffffff;
+    --surface-2:    #eef1e9;
+    --ink:          #1c231c;
+    --ink-soft:     #4b544a;
+    --ink-faint:    #77806f;
+    --line:         #dfe3d8;
+    --line-strong:  #cbd1c0;
+    --accent:       #2f7d4f;   /* leaf green */
+    --accent-soft:  #e4efe6;
+    --accent-ink:   #1f5c39;
+
+    /* authentic Nutri-Score A–E scale — a real detail from the subject */
+    --grade-a: #1e8e4e;
+    --grade-b: #7bc043;
+    --grade-c: #f4c521;
+    --grade-d: #ef8b2c;
+    --grade-e: #d64545;
+
+    --danger:       #c23b3b;
+    --danger-soft:  #f7e5e2;
+
+    --shadow: 0 1px 2px rgba(28,35,28,.05), 0 8px 24px -14px rgba(28,35,28,.22);
+
+    --maxw: 62rem;
+    --step--1: clamp(.82rem, .8rem + .1vw, .9rem);
+    --step-0:  clamp(1rem, .96rem + .2vw, 1.12rem);
+    --step-1:  clamp(1.2rem, 1.1rem + .5vw, 1.45rem);
+    --step-2:  clamp(1.5rem, 1.3rem + .9vw, 2rem);
+    --step-3:  clamp(2rem, 1.6rem + 2vw, 3.1rem);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:       #131612;
+      --surface:     #1b1f1a;
+      --surface-2:   #21261f;
+      --ink:         #edf0e8;
+      --ink-soft:    #b6bdae;
+      --ink-faint:   #838b7c;
+      --line:        #2c322a;
+      --line-strong: #3a4136;
+      --accent:      #6bc98c;
+      --accent-soft: #1f2c22;
+      --accent-ink:  #a7e0bd;
+      --grade-a: #37b06a;
+      --grade-b: #8fd45a;
+      --grade-c: #f4cf3f;
+      --grade-d: #f59a45;
+      --grade-e: #e56a6a;
+      --danger:      #ef7a7a;
+      --danger-soft: #33211f;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -16px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:       #131612;
+    --surface:     #1b1f1a;
+    --surface-2:   #21261f;
+    --ink:         #edf0e8;
+    --ink-soft:    #b6bdae;
+    --ink-faint:   #838b7c;
+    --line:        #2c322a;
+    --line-strong: #3a4136;
+    --accent:      #6bc98c;
+    --accent-soft: #1f2c22;
+    --accent-ink:  #a7e0bd;
+    --grade-a: #37b06a;
+    --grade-b: #8fd45a;
+    --grade-c: #f4cf3f;
+    --grade-d: #f59a45;
+    --grade-e: #e56a6a;
+    --danger:      #ef7a7a;
+    --danger-soft: #33211f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -16px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  img { max-width: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Mulish", ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.65;
+    letter-spacing: .003em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: clamp(1.1rem, 3vw, 2.75rem) clamp(1.1rem, 3.5vw, 2.5rem) 4rem;
+  }
+
+  /* ---- header ---- */
+  header { margin-bottom: 2.5rem; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: var(--step--1);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0 0 .9rem;
+  }
+  h1 {
+    font-family: "Bricolage Grotesque", "Mulish", sans-serif;
+    font-weight: 800;
+    font-size: var(--step-3);
+    line-height: 1.02;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+    margin: 0 0 .9rem;
+  }
+  .lede {
+    font-size: var(--step-1);
+    color: var(--ink-soft);
+    max-width: 40ch;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  /* ---- section scaffolding ---- */
+  section { margin-top: 2.9rem; }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: .7rem;
+    margin: 0 0 1.2rem;
+    padding-bottom: .55rem;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .sec-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--step--1);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h2 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: var(--step-2);
+    letter-spacing: -.015em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  p { margin: 0 0 1rem; max-width: 65ch; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--ink); font-weight: 700; }
+  .accent-word { color: var(--accent-ink); font-weight: 700; }
+
+  /* ---- KPI tiles ---- */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: .9rem;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.15rem 1.2rem 1.05rem;
+    box-shadow: var(--shadow);
+  }
+  .kpi .num {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.9rem, 1.4rem + 2.2vw, 2.7rem);
+    line-height: 1;
+    letter-spacing: -.02em;
+    color: var(--accent-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi .lab {
+    display: block;
+    margin-top: .5rem;
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+    line-height: 1.35;
+  }
+
+  /* ---- pitch callout ---- */
+  .pitch {
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.3rem 1.4rem;
+  }
+  .pitch p { font-size: var(--step-1); max-width: none; color: var(--ink); line-height: 1.55; }
+
+  /* ---- pipeline (ordered sequence => numbers carry meaning) ---- */
+  .flow { display: grid; gap: .75rem; }
+  .step {
+    display: grid;
+    grid-template-columns: 2.4rem 1fr;
+    gap: 1rem;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1rem 1.15rem;
+  }
+  .step .n {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 8px;
+    text-align: center;
+    padding: .25rem 0;
+    line-height: 1.6;
+  }
+  .step h3 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-size: 1.08rem;
+    font-weight: 700;
+    margin: .15rem 0 .25rem;
+    letter-spacing: -.01em;
+  }
+  .step p { margin: 0; font-size: var(--step--1); color: var(--ink-soft); max-width: 60ch; }
+  .step .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .72rem;
+    color: var(--ink-faint);
+  }
+
+  /* ---- decisions / cards list ---- */
+  .stack { display: grid; gap: .85rem; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.05rem 1.2rem;
+  }
+  .card h3 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 .3rem;
+    letter-spacing: -.01em;
+  }
+  .card p { margin: 0; font-size: var(--step--1); color: var(--ink-soft); max-width: 64ch; }
+
+  /* ---- glossary ---- */
+  .glossary { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .term {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 10rem) 1fr;
+    gap: 1.1rem;
+    padding: .85rem 1.15rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .term:last-child { border-bottom: 0; }
+  .term dt {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: .98rem;
+  }
+  .term dd { margin: 0; font-size: var(--step--1); color: var(--ink-soft); }
+  .term dd em { color: var(--accent-ink); font-style: normal; font-weight: 600; }
+
+  /* ---- grade table ---- */
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; min-width: 30rem; background: var(--surface); }
+  th, td {
+    text-align: right;
+    padding: .7rem .9rem;
+    font-variant-numeric: tabular-nums;
+    font-size: var(--step--1);
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: .74rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--ink-faint);
+    background: var(--surface-2);
+  }
+  td:first-child, th:first-child { text-align: left; }
+  tbody tr:last-child td { border-bottom: 0; }
+  .grade-chip {
+    display: inline-grid;
+    place-items: center;
+    width: 1.7rem; height: 1.7rem;
+    border-radius: 7px;
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 800;
+    color: #fff;
+    font-size: .95rem;
+  }
+  .g-a { background: var(--grade-a); }
+  .g-b { background: var(--grade-b); color:#1c231c; }
+  .g-c { background: var(--grade-c); color:#1c231c; }
+  .g-d { background: var(--grade-d); }
+  .g-e { background: var(--grade-e); }
+  .note-row td { color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; font-size: .74rem; background: var(--surface-2); }
+
+  /* ---- Q&A ---- */
+  .qa { display: grid; gap: .8rem; }
+  details {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  details[open] { border-color: var(--line-strong); box-shadow: var(--shadow); }
+  summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 1rem 1.2rem;
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: 1.02rem;
+    letter-spacing: -.01em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "+";
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 500;
+    color: var(--accent);
+    font-size: 1.3rem;
+    transition: transform .2s ease;
+  }
+  details[open] summary::after { transform: rotate(45deg); }
+  .ans { padding: 0 1.2rem 1.15rem; font-size: var(--step--1); color: var(--ink-soft); }
+  .ans p { max-width: 66ch; }
+  .ans .say {
+    display: block;
+    margin-top: .6rem;
+    padding: .7rem .9rem;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    color: var(--ink);
+    border-left: 3px solid var(--accent);
+  }
+
+  /* ---- chips / stack strip ---- */
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .78rem;
+    padding: .38rem .7rem;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  footer {
+    margin-top: 3.2rem;
+    padding-top: 1.2rem;
+    border-top: 1.5px solid var(--line);
+    color: var(--ink-faint);
+    font-size: var(--step--1);
+  }
+
+  a { color: var(--accent-ink); }
+  :focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  @media (max-width: 34rem) {
+    .term { grid-template-columns: 1fr; gap: .2rem; }
+    .step { grid-template-columns: 2rem 1fr; gap: .75rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Data Analyst Portfolio</p>
+    <h1>The Health Halo Project</h1>
+    <p class="lede">Predicting food health grades — and exposing the products that only <em>look</em> healthy.</p>
+  </header>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi"><span class="num">3,956</span><span class="lab">Australian products analysed</span></div>
+    <div class="kpi"><span class="num">77%</span><span class="lab">Model accuracy (5-fold cross-validated)</span></div>
+    <div class="kpi"><span class="num">31%</span><span class="lab">"Healthy-marketed" foods that score D or E</span></div>
+    <div class="kpi"><span class="num">15</span><span class="lab">Features engineered for the model</span></div>
+  </div>
+
+  <!-- Pitch -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>What I did</h2></div>
+    <div class="pitch">
+      <p>I took ~17,000 Australian food products from the open-source <strong>Open Food Facts</strong> database and did two things: built a model that predicts a product's <strong>Nutri-Score</strong> health grade (A–E) from its nutrition facts, and — by comparing products' <strong>real grades</strong> against their marketing — exposed the <span class="accent-word">"health halo"</span>: nearly <strong>1 in 3</strong> products marketed as healthy actually score a poor D or E.</p>
+    </div>
+  </section>
+
+  <!-- Pipeline -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>How I built it, start to finish</h2></div>
+    <div class="flow">
+      <div class="step"><span class="n">1</span><div><h3>Extract</h3><p>Pulled Australian products out of the giant global file using <span class="tag">DuckDB</span> — fast filtering straight off a 200+ column dataset. <strong>17,225 rows.</strong></p></div></div>
+      <div class="step"><span class="n">2</span><div><h3>Quality check</h3><p>Found only ~4,900 rows had complete nutrition. Chose <strong>Nutri-Score as the target</strong> over NOVA — better coverage and more balanced grades.</p></div></div>
+      <div class="step"><span class="n">3</span><div><h3>Clean</h3><p>Kept only real A–E grades with full nutrition, and removed physically impossible values. <strong>3,956 clean rows.</strong></p></div></div>
+      <div class="step"><span class="n">4</span><div><h3>Feature engineering</h3><p>Built <strong>15 features</strong> — nutrition ratios, ingredient-text signals (added sugar, palm oil, ingredient count), and a marketing "claims healthy" flag.</p></div></div>
+      <div class="step"><span class="n">5</span><div><h3>Model</h3><p>Trained a <span class="tag">HistGradientBoostingClassifier</span> on an 80/20 split, then 5-fold cross-validation for an honest score. <strong>77% accuracy.</strong></p></div></div>
+      <div class="step"><span class="n">6</span><div><h3>Explain</h3><p>Used <span class="tag">SHAP</span> to confirm the model was driven by <strong>salt, sugar and saturated fat</strong> — exactly what Nutri-Score is designed to punish.</p></div></div>
+      <div class="step"><span class="n">7</span><div><h3>Health-halo analysis</h3><p>Compared marketing claims against real grades. Refined the definition to exclude honest whole foods, moving <strong>33% → a defensible 31%.</strong></p></div></div>
+      <div class="step"><span class="n">8</span><div><h3>Export for dashboard</h3><p>Saved four clean CSVs (main table, feature ranking, offender list, KPI metrics) ready to load into <strong>Power BI</strong>.</p></div></div>
+    </div>
+  </section>
+
+  <!-- Decisions -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Decisions that show judgement</h2></div>
+    <div class="stack">
+      <div class="card"><h3>Nutri-Score over NOVA</h3><p>Nutri-Score had far better data coverage and more balanced grades, so it made a fairer, more reliable prediction target.</p></div>
+      <div class="card"><h3>Kept the marketing flag out of the model</h3><p>The "claims healthy" flag was deliberately excluded from the features — so the model learns real nutrition, letting me honestly compare <em>marketing vs reality</em> afterwards.</p></div>
+      <div class="card"><h3>Refined my own finding down</h3><p>My first pass caught honest butters and oils (33%). I tightened the wording and excluded whole-food categories to reach a smaller but defensible 31% — chose honest over flashy.</p></div>
+      <div class="card"><h3>Validated with SHAP</h3><p>Rather than trusting a black box, I confirmed the model relied on the nutrients that genuinely matter — evidence it learned signal, not noise.</p></div>
+      <div class="card"><h3>Reported the cross-validated score</h3><p>Quoted 77% (5-fold average) instead of the luckier 79% single split — the more truthful measure of real-world performance.</p></div>
+    </div>
+  </section>
+
+  <!-- Metrics glossary -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Metrics, in plain words</h2></div>
+    <dl class="glossary">
+      <div class="term"><dt>Precision</dt><dd>When the model <em>says</em> a grade, how often it's right. <em>A clean catch.</em></dd></div>
+      <div class="term"><dt>Recall</dt><dd>Of the foods <em>truly</em> in a grade, how many it caught. <em>Didn't miss them.</em></dd></div>
+      <div class="term"><dt>F1-score</dt><dd>One number balancing precision and recall — it leans toward the weaker of the two.</dd></div>
+      <div class="term"><dt>Support</dt><dd>How many real examples of that grade were in the test set. <em>Sample size.</em></dd></div>
+      <div class="term"><dt>Accuracy</dt><dd>Overall share of foods graded correctly — 79% on the test set, 77% cross-validated.</dd></div>
+      <div class="term"><dt>Macro avg</dt><dd>Average across grades treating each <em>equally</em> — exposes weakness on small grades like B.</dd></div>
+      <div class="term"><dt>Weighted avg</dt><dd>Average weighted by grade size — favours the bigger grades, so it tracks accuracy.</dd></div>
+    </dl>
+  </section>
+
+  <!-- Grade table -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>How the model scored, grade by grade</h2></div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Grade</th><th>Precision</th><th>Recall</th><th>F1</th><th>Support</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="grade-chip g-a">A</span></td><td>0.83</td><td>0.87</td><td>0.85</td><td>136</td></tr>
+          <tr><td><span class="grade-chip g-b">B</span></td><td>0.65</td><td>0.55</td><td>0.59</td><td>100</td></tr>
+          <tr><td><span class="grade-chip g-c">C</span></td><td>0.72</td><td>0.77</td><td>0.74</td><td>198</td></tr>
+          <tr><td><span class="grade-chip g-d">D</span></td><td>0.78</td><td>0.80</td><td>0.79</td><td>149</td></tr>
+          <tr><td><span class="grade-chip g-e">E</span></td><td>0.92</td><td>0.88</td><td>0.89</td><td>209</td></tr>
+          <tr class="note-row"><td>accuracy</td><td colspan="3">0.79 overall</td><td>792</td></tr>
+          <tr class="note-row"><td>macro avg</td><td>0.78</td><td>0.77</td><td>0.77</td><td>792</td></tr>
+          <tr class="note-row"><td>weighted avg</td><td>0.79</td><td>0.79</td><td>0.79</td><td>792</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:var(--step--1);color:var(--ink-faint);margin-top:.8rem;">Best at the extremes (A and E — clearly healthy vs clearly junk); weakest on B, where only 55% of real B's were caught. Middle grades are genuinely harder to tell apart.</p>
+  </section>
+
+  <!-- Q&A -->
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>FAQs</h2></div>
+    <div class="qa">
+
+      <details open>
+        <summary>What was the goal of the project?</summary>
+        <div class="ans">
+          <p>Two separate pieces of work sharing one dataset. First, build a model that predicts a food's health grade from its nutrition — the machine-learning side. Second, compare products' <em>real</em> grades against their marketing language to find the health halo.</p>
+          <span class="say">"I built a model to predict health grades from nutrition, and separately I compared the real grades against marketing claims — and found nearly a third of 'healthy' products actually rate D or E."</span>
+        </div>
+      </details>
+
+      <details>
+        <summary>Did the model actually create the 31% finding?</summary>
+        <div class="ans">
+          <p>No — and it's worth being precise. The health-halo finding compares each product's <em>real</em> Nutri-Score against its marketing, so it uses the actual grades, not the model's predictions. The model is a separate piece: it proves a grade can be predicted from nutrition alone (SHAP shows salt, sugar and fat drive it), which establishes the grade as a trustworthy, objective measure of health.</p>
+          <span class="say">"The halo uses real grades, not predictions. The model proves those grades are genuinely nutrition-driven — and a natural next step would be using it to predict grades for products that have no official one, extending the halo analysis to them."</span>
+        </div>
+      </details>
+
+      <details>
+        <summary>Why that model — HistGradientBoosting?</summary>
+        <div class="ans">
+          <p>It's strong on tabular data and handles missing values natively, which mattered because nutrition data is patchy.</p>
+          <span class="say">"It's reliable on messy real-world tables and copes with gaps in the data without me having to fill everything in."</span>
+        </div>
+      </details>
+
+      <details>
+        <summary>How do you know it isn't overfitting?</summary>
+        <div class="ans">
+          <p>I held out 20% of the data the model never saw, and ran 5-fold cross-validation so the score is an average across five different splits, not one lucky one.</p>
+          <span class="say">"I trust the 77% cross-validated figure because it's tested on data the model never studied."</span>
+        </div>
+      </details>
+
+      <details>
+        <summary>Which features mattered most, and how do you know?</summary>
+        <div class="ans">
+          <p>Salt, sugar and saturated fat — confirmed with SHAP. Reassuringly, those are exactly the nutrients Nutri-Score is built to penalise.</p>
+          <span class="say">"SHAP showed the model leaned on the nutrients that genuinely define the grade — so it learned real nutrition, not a fluke."</span>
+        </div>
+      </details>
+
+      <details>
+        <summary>What's the weakest part, or what would you improve?</summary>
+        <div class="ans">
+          <p>Grade B was hardest (0.55 recall). The marketing and ingredient flags are keyword-based so they have edge cases, the SHAP importances in my export were approximated, and ~70% of Australian rows lacked full nutrition.</p>
+          <span class="say">"With more time I'd refine the keyword flags into something smarter and recover more of the incomplete rows."</span>
+        </div>
+      </details>
+
+      <details>
+        <summary>So what — why does this matter?</summary>
+        <div class="ans">
+          <p>Roughly 1 in 3 "healthy-marketed" products are actually poorly rated — a real signal for shoppers, retailers and regulators about the gap between packaging claims and nutrition.</p>
+          <span class="say">"It quantifies the health halo: how often 'better-for-you' branding doesn't match what's in the pack."</span>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+  <!-- Stack -->
+  <section>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Tools I used</h2></div>
+    <div class="chips">
+      <span class="chip">DuckDB · SQL extraction</span>
+      <span class="chip">pandas · cleaning &amp; features</span>
+      <span class="chip">scikit-learn · modelling</span>
+      <span class="chip">SHAP · explainability</span>
+      <span class="chip">matplotlib · charts</span>
+      <span class="chip">Power BI · dashboard</span>
+    </div>
+  </section>
+
+  <footer>
+    Health Halo Project · figures verified against the notebook outputs. Data: Open Food Facts (open database), Australian products.
+  </footer>
+
+</div>
+
+</body>
+</html>
